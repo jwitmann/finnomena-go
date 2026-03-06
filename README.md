@@ -54,6 +54,38 @@ Default: 3 retries with 1s, 2s, 4s exponential backoff.
 - GetFundFee - Fee structure
 - GetFundPortfolio - Holdings and allocation
 
+## Fee Translation Example
+
+Thai fund fees are returned in Thai language. Use `TranslateFee` to convert them to English:
+
+```go
+// Get fund fee information
+fee, err := client.GetFundFee("F000001")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Translate Thai fee descriptions to English
+for i := range fee.Fees {
+    finnomena.TranslateFee(&fee.Fees[i], true) // true = use English names
+    fmt.Printf("%s: %s %s\n", 
+        fee.Fees[i].Description,  // Now in English
+        fee.Fees[i].Rate,
+        fee.Fees[i].Unit)
+}
+
+// Output:
+// Management Fee: 1.50 % per year
+// Purchase Fee: 2.00 %
+// Redemption Fee: 0.00 %
+```
+
+Available translations:
+- `ค่าธรรมเนียมการจัดการ` → `management fee`
+- `ค่าธรรมเนียมการขายหน่วยลงทุน (Front-end Fee)` → `purchase fee`
+- `ค่าธรรมเนียมการรับซื้อคืนหน่วยลงทุน (Back-end Fee)` → `redemption fee`
+- And more...
+
 ## Related
 
 - finnomena-models - Data types
