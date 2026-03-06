@@ -1,7 +1,7 @@
 # finnomena-go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/jwitmann/finnomena-go.svg)](https://pkg.go.dev/github.com/jwitmann/finnomena-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/jwitmann/finnomena-go)](https://goreportcard.com/report/github.com/jwitmann/finnomena-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jwitmann/finnomena-go?t=1)](https://goreportcard.com/report/github.com/jwitmann/finnomena-go)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Go client for the [Finnomena.com](https://www.finnomena.com) Thai mutual fund API.
