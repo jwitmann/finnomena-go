@@ -1,6 +1,10 @@
 # finnomena-go
 
-Go client for the [Finnomena.com](https://www.finnomena.com) API.
+[![Go Reference](https://pkg.go.dev/badge/github.com/jwitmann/finnomena-go.svg)](https://pkg.go.dev/github.com/jwitmann/finnomena-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jwitmann/finnomena-go)](https://goreportcard.com/report/github.com/jwitmann/finnomena-go)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+Go client for the [Finnomena.com](https://www.finnomena.com) Thai mutual fund API.
 
 ## Installation
 
@@ -90,6 +94,25 @@ Available translations:
 
 - finnomena-models - Data types
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Related
+
+- [finnomena-models](https://github.com/jwitmann/finnomena-models) - Data types for this client
+- [thai-market-data](https://github.com/jwitmann/thai-market-data) - Thai market data (AIMC, SET)
+
+## Disclaimer
+
+This is an unofficial client for the Finnomena.com API. It is not affiliated with or endorsed by Finnomena.
+
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details
