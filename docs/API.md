@@ -1135,3 +1135,48 @@ When `UseEnglishNames` setting is enabled (default), Thai company names in `top_
 - `global_stock_sector.elements[].name`: Thai sector names are translated to English (e.g., "บริการด้านการเงิน" → "Financial Services")
 - `asset_allocation.elements[].name`: Not translated (generic Thai terms)
 - `regional_exposure.elements[].name`: Not translated (already in English)
+
+### Funds of a given category.
+
+request: `GET /categories/<fund aimc category>/related?period=<period>&exclude_fund_ids[]=<fund id to exclude>>&limit=<number max>`
+
+Return up to the passed limit funds of a given AIMC category. Excluded funds would be the fund id passed in the exclude_fund_ids array.
+
+Example:
+
+  `GET /categories/LC00002469/related?period=1Y&exclude_fund_ids[]=F00001KO3X&limit=3`
+
+**Response Structure:**
+
+```json
+{
+ "status": true,
+ "service_code": "51",
+ "data": {
+  "funds": [
+   {
+    "fund_id": "F00000Z175",
+    "short_code": "TISCOBIG",
+    "aimc_category_id": "LC00002469",
+    "amc_short_name": "TISCOAM",
+    "return_1y": 34.9635
+   },
+   {
+    "fund_id": "F00000XCCT",
+    "short_code": "BMSCITH",
+    "aimc_category_id": "LC00002469",
+    "amc_short_name": "BCAP",
+    "return_1y": 33.4351
+   },
+   {
+    "fund_id": "F000011NYM",
+    "short_code": "BCAP-MSCITH",
+    "aimc_category_id": "LC00002469",
+    "amc_short_name": "BCAP",
+    "return_1y": 32.76842
+   }
+  ],
+  "is_category_consistent": true
+ }
+}
+```
