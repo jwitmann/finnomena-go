@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jwitmann/finnomena-models"
+	"github.com/jwitmann/finnomena-go/models"
 )
 
 const (

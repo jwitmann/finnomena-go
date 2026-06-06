@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jwitmann/finnomena-models"
+	"github.com/jwitmann/finnomena-go/models"
 )
 
 func TestNewClient(t *testing.T) {

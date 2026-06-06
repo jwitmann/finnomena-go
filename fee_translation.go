@@ -1,6 +1,6 @@
 package finnomena
 
-import "github.com/jwitmann/finnomena-models"
+import "github.com/jwitmann/finnomena-go/models"
 
 var FeeDescriptionTranslation = map[string]string{
 	"ค่าใช้จ่ายอื่นๆ":                                        "other fee",
