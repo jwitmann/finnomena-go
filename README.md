@@ -12,29 +12,50 @@ Go client for the [Finnomena.com](https://www.finnomena.com) Thai mutual fund AP
 go get github.com/jwitmann/finnomena-go
 ```
 
-## Usage
+## Quick Start
 
 ```go
-import finnomena "github.com/jwitmann/finnomena-go"
+import (
+    "context"
+    "time"
+    
+    finnomena "github.com/jwitmann/finnomena-go"
+)
 
-// Create client
-client := finnomena.NewClient()
-
-// Get all funds
-funds, err := client.GetFundsList()
-
-// Get historical prices
-from := time.Now().AddDate(-1, 0, 0)
-to := time.Now()
-bars, err := client.GetHistoricalPrices("FUND-A", "D", from, to)
-
-// Get fund info
-latest, perf, overview, err := client.GetFundInfo("F000001")
+func main() {
+    client := finnomena.NewClient()
+    
+    // Get all funds
+    funds, err := client.GetFundsList(context.Background())
+    
+    // Get historical prices
+    from := time.Now().AddDate(-1, 0, 0)
+    to := time.Now()
+    bars, err := client.GetHistoricalPrices(context.Background(), "FUND-A", "D", from, to)
+    
+    // Get fund latest NAV
+    latest, err := client.GetFundLatest(context.Background(), "F000001")
+}
 ```
+
+## Data Types
+
+All API response types are available in the `models` subpackage:
+
+```go
+import "github.com/jwitmann/finnomena-go/models"
+
+// Direct access to types
+var fund models.Fund
+var bars models.BarsResponse
+```
+
+> **Note:** The standalone `finnomena-models` module has been merged into this package. Update your import from `github.com/jwitmann/finnomena-models` to `github.com/jwitmann/finnomena-go/models`.
 
 ## Features
 
 - All Finnomena API endpoints
+- Context support for cancellation/timeouts
 - Automatic retry with exponential backoff
 - Thai-to-English fee translation
 - Zero external dependencies
@@ -50,58 +71,47 @@ Default: 3 retries with 1s, 2s, 4s exponential backoff.
 
 ## API Coverage
 
-- GetFundsList - All available funds
-- GetHistoricalPrices - OHLCV bars
-- GetFundLatest - Current NAV
-- GetFundPerformance - Returns, Sharpe, drawdown
-- GetFundOverview - 3D metrics
-- GetFundFee - Fee structure
-- GetFundPortfolio - Holdings and allocation
+### Fund Data
+- `GetFundsList(ctx)` - All available funds
+- `SearchFund(query)` - Find fund by short code or ID
+- `GetSymbolInfo(ctx, symbol)` - Trading symbol metadata
+
+### Historical Prices
+- `GetHistoricalPrices(ctx, symbol, resolution, from, to)` - OHLCV bars
+
+### Fund Information
+- `GetFundLatest(ctx, fundID)` - Current NAV and change
+- `GetFundPerformance(ctx, fundID)` - Returns, Sharpe, drawdown
+- `GetFundOverview(ctx, fundID)` - 3D metrics (PP, RR, DD scores)
+- `GetFundFee(ctx, fundID)` - Fee structure
+- `GetFundPortfolio(ctx, fundID)` - Holdings and allocation
+- `GetFundVerify(ctx, fundID)` - Available data periods
+
+### Utility
+- `GetServerTime(ctx)` - Server timestamp
 
 ## Fee Translation Example
 
 Thai fund fees are returned in Thai language. Use `TranslateFee` to convert them to English:
 
 ```go
-// Get fund fee information
-fee, err := client.GetFundFee("F000001")
+fee, err := client.GetFundFee(context.Background(), "F000001")
 if err != nil {
     log.Fatal(err)
 }
 
-// Translate Thai fee descriptions to English
 for i := range fee.Fees {
-    finnomena.TranslateFee(&fee.Fees[i], true) // true = use English names
+    finnomena.TranslateFee(&fee.Fees[i], true)
     fmt.Printf("%s: %s %s\n", 
-        fee.Fees[i].Description,  // Now in English
+        fee.Fees[i].Description,
         fee.Fees[i].Rate,
         fee.Fees[i].Unit)
 }
-
-// Output:
-// Management Fee: 1.50 % per year
-// Purchase Fee: 2.00 %
-// Redemption Fee: 0.00 %
 ```
-
-Available translations:
-- `ค่าธรรมเนียมการจัดการ` → `management fee`
-- `ค่าธรรมเนียมการขายหน่วยลงทุน (Front-end Fee)` → `purchase fee`
-- `ค่าธรรมเนียมการรับซื้อคืนหน่วยลงทุน (Back-end Fee)` → `redemption fee`
-- And more...
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## Related
 
+- [finnomena-models](https://github.com/jwitmann/finnomena-models) - **Deprecated**. Types merged into this repo.
 - [thai-market-data](https://github.com/jwitmann/thai-market-data) - Thai market data (AIMC, SET)
 
 ## Disclaimer
