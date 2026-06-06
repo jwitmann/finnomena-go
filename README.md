@@ -37,7 +37,7 @@ latest, perf, overview, err := client.GetFundInfo("F000001")
 - All Finnomena API endpoints
 - Automatic retry with exponential backoff
 - Thai-to-English fee translation
-- Zero external dependencies (except models package)
+- Zero external dependencies
 
 ## Retry Configuration
 
@@ -90,10 +90,6 @@ Available translations:
 - `ค่าธรรมเนียมการรับซื้อคืนหน่วยลงทุน (Back-end Fee)` → `redemption fee`
 - And more...
 
-## Related
-
-- finnomena-models - Data types
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -106,7 +102,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Related
 
-- [finnomena-models](https://github.com/jwitmann/finnomena-models) - Data types for this client
 - [thai-market-data](https://github.com/jwitmann/thai-market-data) - Thai market data (AIMC, SET)
 
 ## Disclaimer
