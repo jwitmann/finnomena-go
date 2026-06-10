@@ -236,9 +236,9 @@ type PortfolioItem struct {
 
 // FundDividendResponse represents the response from the fund dividend endpoint
 type FundDividendResponse struct {
-	Status      bool          `json:"status"`
-	ServiceCode string        `json:"service_code"`
-	Data        FundDividend  `json:"data"`
+	Status      bool         `json:"status"`
+	ServiceCode string       `json:"service_code"`
+	Data        FundDividend `json:"data"`
 }
 
 // FundDividend represents fund dividend data
@@ -250,8 +250,8 @@ type FundDividend struct {
 
 // Dividend represents a single dividend entry
 type Dividend struct {
-	XDDate time.Time `json:"xd_date"`
-	Value  string    `json:"value"`
+	XDDate  time.Time `json:"xd_date"`
+	Value   string    `json:"value"`
 	PayDate time.Time `json:"pay_date"`
 }
 

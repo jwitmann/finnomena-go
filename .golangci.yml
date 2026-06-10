@@ -1,0 +1,109 @@
+# ThaiFA golangci-lint configuration
+# Run: golangci-lint run ./...
+
+run:
+  timeout: 5m
+  go: "1.25"
+
+linters:
+  enable:
+    - gofmt
+    - gosimple
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - forcetypeassert
+    - nilerr
+    - importas
+
+  disable:
+    # TODO: Enable these after fixing existing issues:
+    - govet             # fieldalignment warnings (many struct reordering needed)
+    - gocritic          # rangeValCopy, hugeParam, ifElseChain (many fixes needed)
+    - prealloc          # Pre-allocation suggestions (many slice pre-allocations needed)
+    - wastedassign      # Reassigned without use (several cases to review)
+    - errcheck          # Unchecked error returns (many defer patterns to fix)
+    - gosec             # File permissions (G301/G306 - many WriteFile/MkdirAll calls)
+    - revive            # Missing comments, unused params, style issues (massive docs needed)
+    - dupl              # Use 'make duplicates' instead
+    - gocyclo           # Use 'make complexity' instead
+    - lll               # Line length limit
+    - gochecknoglobals  # Too noisy for this codebase
+    - gochecknoinits    # Too noisy for this codebase
+
+linters-settings:
+  gofmt:
+    simplify: true
+  revive:
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: dot-imports
+      - name: empty-block
+      - name: error-naming
+      - name: error-return
+      - name: error-strings
+      - name: errorf
+      - name: exported
+      - name: if-return
+      - name: increment-decrement
+      - name: var-naming
+      - name: var-declaration
+      - name: package-comments
+        disabled: true
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: indent-error-flow
+      - name: superfluous-else
+      - name: unused-parameter
+        arguments: ["allowRegex": "^(_|ctx|w|r)$"]
+      - name: unreachable-code
+      - name: redefines-builtin-id
+  gosec:
+    excludes:
+      - G104  # Audit errors not checked (covered by errcheck)
+      - G304  # File path constructed from variable (needed for config files)
+
+issues:
+  exclude-use-default: false
+  exclude:
+    # Allow shadowing in test files
+    - "shadow.*in test"
+    # Allow fmt.Println in main.go files
+    - "fmt.Println.*in main"
+    # Allow os.Exit in main.go files
+    - "os.Exit.*in main"
+    # Allow panic in test files
+    - "panic.*in test"
+  exclude-rules:
+    # Exclude some linters from test files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - prealloc
+    # Exclude complexity checks from cmd/ tools
+    - path: cmd/
+      linters:
+        - gocyclo
+        - dupl
+    # Exclude gocritic exitAfterDefer from main.go files
+    - path: cmd/.*/main\.go
+      linters:
+        - gocritic
+      text: "exitAfterDefer"
+    # Exclude hugeParam for handlers (standard pattern)
+    - path: internal/webui/
+      linters:
+        - gocritic
+      text: "hugeParam"
+  exclude-dirs:
+    - node_modules
+  exclude-files:
+    - ".*\\.pb\\.go$"
+  max-issues-per-linter: 0
+  max-same-issues: 0
