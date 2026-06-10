@@ -338,3 +338,50 @@ func (c *Client) GetFundPortfolio(fundID string) (*models.FundPortfolio, error) 
 
 	return &response.Data, nil
 }
+
+// GetFundDividend retrieves dividend information for a specific fund
+func (c *Client) GetFundDividend(fundID string) (*models.FundDividend, error) {
+	body, err := c.doRequest(fmt.Sprintf("/funds/%s/dividend", fundID))
+	if err != nil {
+		return nil, err
+	}
+
+	var response models.FundDividendResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if !response.Status {
+		return nil, fmt.Errorf("API returned error status")
+	}
+
+	return &response.Data, nil
+}
+
+// GetRelatedFunds retrieves related funds for a specific category
+func (c *Client) GetRelatedFunds(categoryID, period string, excludeFundIDs []string, limit int) (*models.RelatedFundsData, error) {
+	params := url.Values{}
+	params.Set("period", period)
+	for _, id := range excludeFundIDs {
+		params.Add("exclude_fund_ids[]", id)
+	}
+	if limit > 0 {
+		params.Set("limit", strconv.Itoa(limit))
+	}
+
+	body, err := c.doRequest(fmt.Sprintf("/categories/%s/related?%s", categoryID, params.Encode()))
+	if err != nil {
+		return nil, err
+	}
+
+	var response models.RelatedFundsResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if !response.Status {
+		return nil, fmt.Errorf("API returned error status")
+	}
+
+	return &response.Data, nil
+}

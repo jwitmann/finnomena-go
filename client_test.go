@@ -333,3 +333,114 @@ func TestGetFundLatest(t *testing.T) {
 		t.Errorf("Expected Value 10.5, got %f", latest.Value)
 	}
 }
+
+func TestGetFundDividend(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedPath := "/funds/F000001/dividend"
+		if r.URL.Path != expectedPath {
+			t.Errorf("Expected path %s, got %s", expectedPath, r.URL.Path)
+		}
+
+		response := models.FundDividendResponse{
+			Status: true,
+			Data: models.FundDividend{
+				FundID:    "F000001",
+				ShortCode: "TEST-A",
+				Dividends: []models.Dividend{
+					{
+						XDDate:  time.Date(2025, 11, 7, 0, 0, 0, 0, time.UTC),
+						Value:   "0.2",
+						PayDate: time.Date(2025, 11, 18, 0, 0, 0, 0, time.UTC),
+					},
+				},
+			},
+		}
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			t.Errorf("Failed to encode response: %v", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewClient()
+	client.baseURL = server.URL
+
+	dividend, err := client.GetFundDividend("F000001")
+	if err != nil {
+		t.Fatalf("GetFundDividend() error = %v", err)
+	}
+
+	if dividend.ShortCode != "TEST-A" {
+		t.Errorf("Expected ShortCode TEST-A, got %s", dividend.ShortCode)
+	}
+
+	if len(dividend.Dividends) != 1 {
+		t.Fatalf("Expected 1 dividend, got %d", len(dividend.Dividends))
+	}
+
+	if dividend.Dividends[0].Value != "0.2" {
+		t.Errorf("Expected dividend value 0.2, got %s", dividend.Dividends[0].Value)
+	}
+}
+
+func TestGetRelatedFunds(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedPath := "/categories/LC000001/related"
+		if r.URL.Path != expectedPath {
+			t.Errorf("Expected path %s, got %s", expectedPath, r.URL.Path)
+		}
+
+		query := r.URL.Query()
+		if query.Get("period") != "1y" {
+			t.Errorf("Expected period=1y, got %s", query.Get("period"))
+		}
+		if query.Get("limit") != "5" {
+			t.Errorf("Expected limit=5, got %s", query.Get("limit"))
+		}
+
+		response := models.RelatedFundsResponse{
+			Status: true,
+			Data: models.RelatedFundsData{
+				Funds: []models.RelatedFund{
+					{
+						FundID:         "F000002",
+						ShortCode:      "TEST-B",
+						AIMCCategoryID: "LC000001",
+						AMCShortName:   "TESTAMC",
+						Return1Y:       15.5,
+					},
+				},
+				IsCategoryConsistent: true,
+			},
+		}
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			t.Errorf("Failed to encode response: %v", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewClient()
+	client.baseURL = server.URL
+
+	related, err := client.GetRelatedFunds("LC000001", "1y", []string{"F000001"}, 5)
+	if err != nil {
+		t.Fatalf("GetRelatedFunds() error = %v", err)
+	}
+
+	if !related.IsCategoryConsistent {
+		t.Error("Expected IsCategoryConsistent to be true")
+	}
+
+	if len(related.Funds) != 1 {
+		t.Fatalf("Expected 1 related fund, got %d", len(related.Funds))
+	}
+
+	if related.Funds[0].ShortCode != "TEST-B" {
+		t.Errorf("Expected ShortCode TEST-B, got %s", related.Funds[0].ShortCode)
+	}
+
+	if related.Funds[0].Return1Y != 15.5 {
+		t.Errorf("Expected Return1Y 15.5, got %f", related.Funds[0].Return1Y)
+	}
+}

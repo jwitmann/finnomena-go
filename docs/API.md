@@ -936,6 +936,8 @@ Example:
 }
 ```
 
+**Implementation:** `GetFundDividend(fundID string) (*models.FundDividend, error)`
+
 ### Fund portfolio
 
 request: `GET funds/<fund id>/portfolio`
@@ -1176,7 +1178,10 @@ Example:
     "return_1y": 32.76842
    }
   ],
-  "is_category_consistent": true
+   "is_category_consistent": true
+  }
  }
 }
 ```
+
+**Implementation:** `GetRelatedFunds(categoryID, period string, excludeFundIDs []string, limit int) (*models.RelatedFundsData, error)`

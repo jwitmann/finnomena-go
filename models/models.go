@@ -233,3 +233,46 @@ type PortfolioItem struct {
 	LinkURL   string  `json:"link_url"`
 	Color     string  `json:"color"`
 }
+
+// FundDividendResponse represents the response from the fund dividend endpoint
+type FundDividendResponse struct {
+	Status      bool          `json:"status"`
+	ServiceCode string        `json:"service_code"`
+	Data        FundDividend  `json:"data"`
+}
+
+// FundDividend represents fund dividend data
+type FundDividend struct {
+	FundID    string     `json:"fund"`
+	ShortCode string     `json:"short_code"`
+	Dividends []Dividend `json:"dividends"`
+}
+
+// Dividend represents a single dividend entry
+type Dividend struct {
+	XDDate time.Time `json:"xd_date"`
+	Value  string    `json:"value"`
+	PayDate time.Time `json:"pay_date"`
+}
+
+// RelatedFundsResponse represents the response from the related funds endpoint
+type RelatedFundsResponse struct {
+	Status      bool             `json:"status"`
+	ServiceCode string           `json:"service_code"`
+	Data        RelatedFundsData `json:"data"`
+}
+
+// RelatedFundsData represents related funds data
+type RelatedFundsData struct {
+	Funds                []RelatedFund `json:"funds"`
+	IsCategoryConsistent bool          `json:"is_category_consistent"`
+}
+
+// RelatedFund represents a single related fund entry
+type RelatedFund struct {
+	FundID         string  `json:"fund_id"`
+	ShortCode      string  `json:"short_code"`
+	AIMCCategoryID string  `json:"aimc_category_id"`
+	AMCShortName   string  `json:"amc_short_name"`
+	Return1Y       float64 `json:"return_1y"`
+}
