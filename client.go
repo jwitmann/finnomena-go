@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jwitmann/finnomena-go/models"
@@ -137,6 +138,13 @@ func (c *Client) doRequest(endpoint string) ([]byte, error) {
 	return nil, fmt.Errorf("failed after %d attempts (last status: %d): %w", c.maxRetries, lastStatusCode, lastErr)
 }
 
+// normalizeShortCode normalizes a fund code to a canonical uppercase form.
+// Fund codes are case-insensitive identifiers; normalizing them here (at the
+// client boundary) keeps the rest of the system free of case-mismatch bugs.
+func normalizeShortCode(code string) string {
+	return strings.ToUpper(strings.TrimSpace(code))
+}
+
 // GetFundsList retrieves the list of all available funds
 func (c *Client) GetFundsList() ([]models.Fund, error) {
 	body, err := c.doRequest("/funds")
@@ -153,6 +161,9 @@ func (c *Client) GetFundsList() ([]models.Fund, error) {
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	for i := range response.Data {
+		response.Data[i].ShortCode = normalizeShortCode(response.Data[i].ShortCode)
+	}
 	return response.Data, nil
 }
 
@@ -171,6 +182,7 @@ func (c *Client) GetSymbolInfo(symbol string) (*models.SymbolInfo, error) {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
+	symbolInfo.Ticker = normalizeShortCode(symbolInfo.Ticker)
 	return &symbolInfo, nil
 }
 
@@ -211,6 +223,7 @@ func (c *Client) GetFundLatest(fundID string) (*models.FundLatest, error) {
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -230,6 +243,7 @@ func (c *Client) GetFundPerformance(fundID string) (*models.FundPerformance, err
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -249,6 +263,7 @@ func (c *Client) GetFundOverview(fundID string) (*models.FundOverview, error) {
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -268,6 +283,7 @@ func (c *Client) GetFundFee(fundID string) (*models.FundFee, error) {
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -287,6 +303,7 @@ func (c *Client) GetFundVerify(fundID string) (*models.FundVerify, error) {
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -336,6 +353,7 @@ func (c *Client) GetFundPortfolio(fundID string) (*models.FundPortfolio, error) 
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -355,6 +373,7 @@ func (c *Client) GetFundDividend(fundID string) (*models.FundDividend, error) {
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	response.Data.ShortCode = normalizeShortCode(response.Data.ShortCode)
 	return &response.Data, nil
 }
 
@@ -383,5 +402,8 @@ func (c *Client) GetRelatedFunds(categoryID, period string, excludeFundIDs []str
 		return nil, fmt.Errorf("API returned error status")
 	}
 
+	for i := range response.Data.Funds {
+		response.Data.Funds[i].ShortCode = normalizeShortCode(response.Data.Funds[i].ShortCode)
+	}
 	return &response.Data, nil
 }
